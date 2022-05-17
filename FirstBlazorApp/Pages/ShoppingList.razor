@@ -1,25 +1,36 @@
 ﻿@page "/shoppinglist"
 @using FirstBlazorApp.Data
 
-
+<PageTitle>@title</PageTitle>
 <h3>ShoppingList</h3>
 
 <input placeholder="Grocery Name" @bind="groceryName"/>
 <input placeholder="Grocery Price" @bind="groceryPrice"/>
 <button @onclick="AddGrocery">Add Grocery</button>
 
+<table class="table table-sm">
+    <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th></th>
 
-
-<ul>
+    </tr>
+    
     @foreach(var grocery in groceries)
     {
-       <li>@grocery.Name -- @grocery.Price</li>
+       <Item GroceryItem="@grocery"
+           OnGroceryPriceIncreased="OnGroceryPriceIncreased"/>
     }
-</ul>
-<h1>Total (@groceries.Sum(grocery=> grocery.Price)</h1>
+</table>
+
+
+<h1>Total (@groceries.Sum(grocery=> grocery.Price))</h1>
+
 
 @code {
-    private string groceryName;
+    private float sum = 0;
+    private string title = "Our Groceries";
+    private string groceryName = "";
     private float groceryPrice;
 
     private List<Grocery> groceries = new();
@@ -33,9 +44,20 @@
                     Name = groceryName,
                     Price = groceryPrice
                 });
-
             groceryName = string.Empty;
             groceryPrice  = 0;
         }
+
+        UpdateTotalAmount();
+    }
+
+    public void UpdateTotalAmount()
+    {
+        sum = groceries.Sum(x => x.Price);
+    }
+
+    public void OnGroceryPriceIncreased()
+    {
+        UpdateTotalAmount();
     }
 }
